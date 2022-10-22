@@ -1,3 +1,3 @@
-module doraemon
+module github.com/xmuwu/doraemon
 
 go 1.19
