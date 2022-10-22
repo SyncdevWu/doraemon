@@ -58,5 +58,11 @@ func (w *MapWrapper[K, V]) Put(key K, value V) (V, int) {
 	if w.CheckNull() {
 		return nil, 0
 	}
-
+	old, exists := w.raw[key]
+	w.raw[key] = value
+	if exists {
+		return old, 0
+	} else {
+		return old, 1
+	}
 }
