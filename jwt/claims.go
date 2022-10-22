@@ -8,12 +8,12 @@ import (
 )
 
 type Claims struct {
-	*hashmap.MapWrapper[string, any]
+	*hashmap.HashMap[string, any]
 }
 
 func (c *Claims) NewClaims() *Claims {
 	return &Claims{
-		hashmap.NewMapWrapper(&hashmap.Options[string, any]{}),
+		hashmap.NewHashMap(&hashmap.Options[string, any]{}),
 	}
 }
 
@@ -35,21 +35,21 @@ func (c *Claims) Put(claim string, value any) {
 	if c.IsNil() {
 		return
 	}
-	c.MapWrapper.Put(claim, value)
+	c.HashMap.Put(claim, value)
 }
 
 func (c *Claims) PutAll(m map[string]any) {
 	if c.IsNil() {
 		return
 	}
-	c.MapWrapper.PutAll(m)
+	c.HashMap.PutAll(m)
 }
 
 func (c *Claims) GetClaim(key string) any {
 	if c.IsNil() {
 		return nil
 	}
-	claim, _ := c.MapWrapper.Get(key)
+	claim, _ := c.HashMap.Get(key)
 	return claim
 }
 
@@ -57,7 +57,7 @@ func (c *Claims) ToJSONString() string {
 	if c.IsNil() {
 		return ""
 	}
-	if data, err := json.Marshal(c.MapWrapper); err != nil {
+	if data, err := json.Marshal(c.HashMap); err != nil {
 		return ""
 	} else {
 		return string(data)
@@ -73,7 +73,7 @@ func (c *Claims) Parse(tokenPart string) error {
 		return err
 	}
 	c.Clear()
-	err = json.Unmarshal(decodeString, c.MapWrapper)
+	err = json.Unmarshal(decodeString, c.HashMap)
 	return err
 }
 
@@ -81,13 +81,13 @@ func (c *Claims) MarshalJSON() ([]byte, error) {
 	if c.IsNil() {
 		return nil, errors.New("claim is nil")
 	}
-	return json.Marshal(c.MapWrapper)
+	return json.Marshal(c.HashMap)
 }
 
 func (c *Claims) UnmarshalJSON(b []byte) error {
 	if c.IsNil() {
 		return errors.New("claim is nil")
 	}
-	c.MapWrapper.Clear()
-	return json.Unmarshal(b, c.MapWrapper)
+	c.HashMap.Clear()
+	return json.Unmarshal(b, c.HashMap)
 }
