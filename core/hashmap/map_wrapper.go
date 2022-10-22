@@ -53,3 +53,10 @@ func (w *MapWrapper[K, V]) Get(key K) (V, bool) {
 	value, exists := w.raw[key]
 	return value, exists
 }
+
+func (w *MapWrapper[K, V]) Put(key K, value V) (V, int) {
+	if w.CheckNull() {
+		return nil, 0
+	}
+
+}
