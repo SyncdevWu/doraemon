@@ -1,3 +1,3 @@
-module github.com/xmuwu/doraemon
+module github.com/doraemon/doraemon
 
 go 1.18

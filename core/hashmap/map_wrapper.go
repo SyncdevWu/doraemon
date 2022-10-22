@@ -37,7 +37,6 @@ func (w *MapWrapper[K, V]) CheckNull() bool {
 		return true
 	}
 	return false
-
 }
 
 func (w *MapWrapper[K, V]) CheckNotNull() bool {
@@ -45,4 +44,12 @@ func (w *MapWrapper[K, V]) CheckNotNull() bool {
 		return false
 	}
 	return true
+}
+
+func (w *MapWrapper[K, V]) Get(key K) (V, bool) {
+	if w.CheckNull() {
+		return nil, false
+	}
+	value, exists := w.raw[key]
+	return value, exists
 }
