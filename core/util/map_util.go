@@ -1,6 +1,6 @@
 package util
 
-func CheckNull[K comparable, V any](m map[K]V) bool {
+func IsNil[K comparable, V any](m map[K]V) bool {
 	if m == nil {
 		return true
 	} else {
@@ -8,7 +8,7 @@ func CheckNull[K comparable, V any](m map[K]V) bool {
 	}
 }
 
-func CheckNotNull[K comparable, V any](m map[K]V) bool {
+func IsNotNil[K comparable, V any](m map[K]V) bool {
 	if m == nil {
 		return false
 	} else {
@@ -16,7 +16,7 @@ func CheckNotNull[K comparable, V any](m map[K]V) bool {
 	}
 }
 
-func Contains[K comparable, V any](m map[K]V, key K) bool {
+func ContainsKey[K comparable, V any](m map[K]V, key K) bool {
 	_, exists := m[key]
 	return exists
 }

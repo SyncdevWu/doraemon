@@ -9,7 +9,7 @@ type MapWrapper[K comparable, V any] struct {
 	raw map[K]V
 }
 
-func NewMapWrapper[K comparable, V any](op *options[K, V]) *MapWrapper[K, V] {
+func NewMapWrapper[K comparable, V any](op *Options[K, V]) *MapWrapper[K, V] {
 	op.init()
 	return &MapWrapper[K, V]{
 		raw: op.m,
@@ -17,34 +17,34 @@ func NewMapWrapper[K comparable, V any](op *options[K, V]) *MapWrapper[K, V] {
 }
 
 func (w *MapWrapper[K, V]) GetRaw() map[K]V {
-	if w.CheckNull() {
+	if w.IsNil() {
 		return nil
 	}
 	return w.raw
 }
 
 func (w *MapWrapper[K, V]) size() int {
-	if w.CheckNull() {
+	if w.IsNil() {
 		return 0
 	}
 	return len(w.GetRaw())
 }
 
-func (w *MapWrapper[K, V]) CheckNullOrEmpty() bool {
-	if w.CheckNull() || w.size() == 0 {
+func (w *MapWrapper[K, V]) IsNilOrEmpty() bool {
+	if w.IsNil() || w.size() == 0 {
 		return true
 	}
 	return false
 }
 
-func (w *MapWrapper[K, V]) CheckNull() bool {
+func (w *MapWrapper[K, V]) IsNil() bool {
 	if w == nil {
 		return true
 	}
 	return false
 }
 
-func (w *MapWrapper[K, V]) CheckNotNull() bool {
+func (w *MapWrapper[K, V]) IsNotNil() bool {
 	if w == nil {
 		return false
 	}
@@ -52,7 +52,7 @@ func (w *MapWrapper[K, V]) CheckNotNull() bool {
 }
 
 func (w *MapWrapper[K, V]) Get(key K) (V, bool) {
-	if w.CheckNull() {
+	if w.IsNil() {
 		return nil, false
 	}
 	value, exists := w.raw[key]
@@ -60,7 +60,7 @@ func (w *MapWrapper[K, V]) Get(key K) (V, bool) {
 }
 
 func (w *MapWrapper[K, V]) Put(key K, value V) (V, int) {
-	if w.CheckNull() {
+	if w.IsNil() {
 		return nil, 0
 	}
 	old, exists := w.raw[key]
@@ -73,7 +73,7 @@ func (w *MapWrapper[K, V]) Put(key K, value V) (V, int) {
 }
 
 func (w *MapWrapper[K, V]) Remove(key K) (V, bool) {
-	if w.CheckNotNull() {
+	if w.IsNotNil() {
 		return nil, false
 	}
 	old, exists := w.raw[key]
@@ -82,7 +82,7 @@ func (w *MapWrapper[K, V]) Remove(key K) (V, bool) {
 }
 
 func (w *MapWrapper[K, V]) ContainsKey(key K) bool {
-	if w.CheckNotNull() {
+	if w.IsNotNil() {
 		return false
 	}
 	_, exists := w.raw[key]
@@ -90,7 +90,7 @@ func (w *MapWrapper[K, V]) ContainsKey(key K) bool {
 }
 
 func (w *MapWrapper[K, V]) PutAll(m map[K]V) int {
-	if w.CheckNull() {
+	if w.IsNil() {
 		return 0
 	}
 	result := 0
@@ -104,14 +104,14 @@ func (w *MapWrapper[K, V]) PutAll(m map[K]V) int {
 }
 
 func (w *MapWrapper[K, V]) Clear() {
-	if w.CheckNull() {
+	if w.IsNil() {
 		return
 	}
 	w.raw = make(map[K]V)
 }
 
 func (w *MapWrapper[K, V]) Keys() []K {
-	if w.CheckNull() {
+	if w.IsNil() {
 		return make([]K, 0)
 	}
 	result := make([]K, len(w.raw))
@@ -122,7 +122,7 @@ func (w *MapWrapper[K, V]) Keys() []K {
 }
 
 func (w *MapWrapper[K, V]) Values() []V {
-	if w.CheckNull() {
+	if w.IsNil() {
 		return make([]V, 0)
 	}
 	result := make([]V, len(w.raw))
@@ -133,7 +133,7 @@ func (w *MapWrapper[K, V]) Values() []V {
 }
 
 func (w *MapWrapper[K, V]) PutIfAbsent(key K, value V) bool {
-	if w.CheckNull() {
+	if w.IsNil() {
 		return false
 	}
 	if _, exists := w.raw[key]; exists {
@@ -144,7 +144,7 @@ func (w *MapWrapper[K, V]) PutIfAbsent(key K, value V) bool {
 }
 
 func (w *MapWrapper[K, V]) getOrDefault(key K, defaultValue V) V {
-	if w.CheckNull() {
+	if w.IsNil() {
 		return defaultValue
 	}
 	if value, exists := w.raw[key]; exists {
@@ -155,14 +155,14 @@ func (w *MapWrapper[K, V]) getOrDefault(key K, defaultValue V) V {
 }
 
 func (w *MapWrapper[K, V]) MarshalJSON() ([]byte, error) {
-	if w.CheckNull() {
+	if w.IsNil() {
 		return nil, errors.New("map is nil")
 	}
 	return json.Marshal(w.raw)
 }
 
 func (w *MapWrapper[K, V]) UnmarshalJSON(b []byte) error {
-	if w.CheckNull() {
+	if w.IsNil() {
 		return errors.New("map is nil")
 	}
 	w.Clear()

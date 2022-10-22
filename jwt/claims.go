@@ -3,6 +3,6 @@ package jwt
 type Claims struct {
 }
 
-func (c Claims) New() {
+func (c Claims) NewClaims() {
 
 }
