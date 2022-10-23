@@ -1,7 +1,9 @@
 package signers
 
+import "fmt"
+
 const (
-	IdNone = "none"
+	None = "none"
 )
 
 var noneSigner = &NoneSigner{}
@@ -20,9 +22,9 @@ func (s *NoneSigner) Verify(headerBase64, payloadBase64, signedBase64 string) bo
 	if s == nil || signedBase64 == "" {
 		return false
 	}
-	return true
+	return fmt.Sprintf("%s.%s", headerBase64, payloadBase64) == signedBase64
 }
 
 func (s *NoneSigner) GetAlgorithm() string {
-	return IdNone
+	return None
 }

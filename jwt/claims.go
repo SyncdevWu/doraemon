@@ -11,9 +11,9 @@ type Claims struct {
 	*hashmap.HashMap[string, any]
 }
 
-func (c *Claims) NewClaims() *Claims {
+func NewClaims() *Claims {
 	return &Claims{
-		hashmap.NewHashMap(&hashmap.Options[string, any]{}),
+		HashMap: hashmap.NewHashMap(&hashmap.Options[string, any]{}),
 	}
 }
 

@@ -19,10 +19,16 @@ type RSASigner struct {
 
 var rsaAlgs = hashmap.NewHashMap[string, crypto.Hash](&hashmap.Options[string, crypto.Hash]{})
 
+const (
+	RS256 = "RS256"
+	RS384 = "RS384"
+	RS512 = "RS512"
+)
+
 func init() {
-	rsaAlgs.Put("RS256", crypto.SHA256)
-	rsaAlgs.Put("RS384", crypto.SHA384)
-	rsaAlgs.Put("RS512", crypto.SHA512)
+	rsaAlgs.Put(RS256, crypto.SHA256)
+	rsaAlgs.Put(RS384, crypto.SHA384)
+	rsaAlgs.Put(RS512, crypto.SHA512)
 }
 
 func NewRSASigner(algorithm string, key Key) *RSASigner {
@@ -34,7 +40,7 @@ func NewRSASigner(algorithm string, key Key) *RSASigner {
 		}
 	} else {
 		return &RSASigner{
-			Algorithm: "RS256",
+			Algorithm: RS256,
 			Key:       key,
 			Hash:      crypto.SHA256,
 		}
@@ -72,7 +78,7 @@ func (R *RSASigner) Sign(headerBase64, payloadBase64 string) string {
 	hasher := R.Hash.New()
 	hasher.Write([]byte(strConcat))
 	if str, err := rsa.SignPKCS1v15(rand.Reader, privateKey, R.Hash, hasher.Sum(nil)); err == nil {
-		return encode(str)
+		return util.Base64URLEncode(str)
 	} else {
 		return ""
 	}
@@ -82,7 +88,7 @@ func (R *RSASigner) Verify(headerBase64, payloadBase64, signedBase64 string) boo
 	if R.IsNil() || !R.Hash.Available() || util.IsNilOrEmpty(R.Key.PublicKey) || util.IsNilOrEmpty(R.Key.PrivateKey) {
 		return false
 	}
-	decodeSignedBase64, err := decode(signedBase64)
+	decodeSignedBase64, err := util.Base64URLDecode(signedBase64)
 	if err != nil {
 		return false
 	}

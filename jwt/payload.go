@@ -13,7 +13,13 @@ const (
 )
 
 type Payload struct {
-	Claims
+	*Claims
+}
+
+func NewPayload() *Payload {
+	return &Payload{
+		Claims: NewClaims(),
+	}
 }
 
 func (p *Payload) IsNil() bool {

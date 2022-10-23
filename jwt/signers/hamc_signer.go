@@ -4,16 +4,24 @@ import (
 	"crypto"
 	"crypto/hmac"
 	"github.com/syncdevwu/doraemon/core/hashmap"
+	"github.com/syncdevwu/doraemon/core/util"
 	"strings"
 )
 
 var hmacAlgs = hashmap.NewHashMap[string, crypto.Hash](&hashmap.Options[string, crypto.Hash]{})
 
+const (
+	HS256 = "HS256"
+	HS384 = "HS384"
+	HS512 = "HS512"
+	HSHA1 = "HSHA1"
+)
+
 func init() {
-	hmacAlgs.Put("HS256", crypto.SHA256)
-	hmacAlgs.Put("HS384", crypto.SHA384)
-	hmacAlgs.Put("HS512", crypto.SHA512)
-	hmacAlgs.Put("HSHA1", crypto.SHA1)
+	hmacAlgs.Put(HS256, crypto.SHA256)
+	hmacAlgs.Put(HS384, crypto.SHA384)
+	hmacAlgs.Put(HS512, crypto.SHA512)
+	hmacAlgs.Put(HSHA1, crypto.SHA1)
 }
 
 type HMacSigner struct {
@@ -31,7 +39,7 @@ func NewHmacSigner(algorithm string, key Key) *HMacSigner {
 		}
 	} else {
 		return &HMacSigner{
-			Algorithm: "HS256",
+			Algorithm: HS256,
 			Key:       key,
 			Hash:      crypto.SHA256,
 		}
@@ -60,7 +68,7 @@ func (H *HMacSigner) Sign(headerBase64, payloadBase64 string) string {
 	strConcat := builder.String()
 	hasher := hmac.New(H.Hash.New, H.Key.PublicKey)
 	hasher.Write([]byte(strConcat))
-	return encode(hasher.Sum(nil))
+	return util.Base64URLEncode(hasher.Sum(nil))
 }
 
 func (H *HMacSigner) Verify(headerBase64, payloadBase64, signedBase64 string) bool {

@@ -8,7 +8,13 @@ const (
 )
 
 type Header struct {
-	Claims
+	*Claims
+}
+
+func NewHeader() *Header {
+	return &Header{
+		Claims: NewClaims(),
+	}
 }
 
 func (h *Header) SetKeyId(keyId string) *Header {
