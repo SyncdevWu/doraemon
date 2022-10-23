@@ -3,13 +3,13 @@ package jwt
 import "time"
 
 const (
-	ISSUER     = "iss" // 签发者
-	SUBJECT    = "sub" // 面向的用户
-	AUDIENCE   = "aud" // 接收方
-	EXPIRES_AT = "exp" // 过期时间 必须大于签发时间
-	NOT_BEFORE = "nbf" // 生效时间 在这之前jwt是不可用
-	ISSUED_AT  = "iat" // 签发时间
-	JWT_ID     = "jti" // 唯一身份标识
+	Issuer    = "iss" // 签发者
+	Subject   = "sub" // 面向的用户
+	Audience  = "aud" // 接收方
+	ExpiresAt = "exp" // 过期时间 必须大于签发时间
+	NotBefore = "nbf" // 生效时间 在这之前jwt是不可用
+	IssuedAt  = "iat" // 签发时间
+	JwtId     = "jti" // 唯一身份标识
 )
 
 type Payload struct {
@@ -24,10 +24,7 @@ func (p *Payload) IsNil() bool {
 }
 
 func (p *Payload) IsNotNil() bool {
-	if p == nil {
-		return false
-	}
-	return true
+	return !p.IsNil()
 }
 
 func (p *Payload) AddPayloads(payloadClaims map[string]any) *Payload {
@@ -50,47 +47,47 @@ func (p *Payload) SetIssuer(issuer string) *Payload {
 	if p.IsNil() {
 		return p
 	}
-	return p.SetPayload(ISSUER, issuer)
+	return p.SetPayload(Issuer, issuer)
 }
 
 func (p *Payload) SetSubject(subject string) *Payload {
 	if p.IsNil() {
 		return p
 	}
-	return p.SetPayload(SUBJECT, subject)
+	return p.SetPayload(Subject, subject)
 }
 
 func (p *Payload) SetAudience(audience string) *Payload {
 	if p.IsNil() {
 		return p
 	}
-	return p.SetPayload(AUDIENCE, audience)
+	return p.SetPayload(Audience, audience)
 }
 
 func (p *Payload) SetExpiresAt(expiresAt time.Time) *Payload {
 	if p.IsNil() {
 		return p
 	}
-	return p.SetPayload(EXPIRES_AT, expiresAt)
+	return p.SetPayload(ExpiresAt, expiresAt)
 }
 
 func (p *Payload) SetNotBefore(notBefore time.Time) *Payload {
 	if p.IsNil() {
 		return p
 	}
-	return p.SetPayload(NOT_BEFORE, notBefore)
+	return p.SetPayload(NotBefore, notBefore)
 }
 
 func (p *Payload) SetIssuedAt(issuedAt time.Time) *Payload {
 	if p.IsNil() {
 		return p
 	}
-	return p.SetPayload(ISSUED_AT, issuedAt)
+	return p.SetPayload(IssuedAt, issuedAt)
 }
 
 func (p *Payload) SetJWTId(jwtId string) *Payload {
 	if p.IsNil() {
 		return p
 	}
-	return p.SetPayload(JWT_ID, jwtId)
+	return p.SetPayload(JwtId, jwtId)
 }

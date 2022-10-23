@@ -25,10 +25,7 @@ func (c *Claims) IsNil() bool {
 }
 
 func (c *Claims) IsNotNil() bool {
-	if c == nil {
-		return false
-	}
-	return true
+	return !c.IsNil()
 }
 
 func (c *Claims) Put(claim string, value any) {

@@ -45,10 +45,7 @@ func (w *HashMap[K, V]) IsNil() bool {
 }
 
 func (w *HashMap[K, V]) IsNotNil() bool {
-	if w == nil {
-		return false
-	}
-	return true
+	return !w.IsNil()
 }
 
 func (w *HashMap[K, V]) Get(key K) (V, bool) {

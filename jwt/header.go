@@ -1,10 +1,10 @@
 package jwt
 
 const (
-	ALGORITHM    = "alg"
-	TYPE         = "typ"
-	CONTENT_TYPE = "cty"
-	KEY_ID       = "kid"
+	Algorithm   = "alg"
+	Type        = "typ"
+	ContentType = "cty"
+	KeyId       = "kid"
 )
 
 type Header struct {
@@ -15,7 +15,7 @@ func (h *Header) SetKeyId(keyId string) *Header {
 	if h == nil {
 		return h
 	}
-	h.Claims.Put(KEY_ID, keyId)
+	h.Claims.Put(KeyId, keyId)
 	return h
 }
 
