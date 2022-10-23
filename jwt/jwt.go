@@ -151,7 +151,8 @@ func (jwt *JWT) Validate() bool {
 	if !jwt.Verify() {
 		return false
 	}
-	
+	// 验证是否Token是否有效
+	return ValidateTime(jwt)
 }
 
 func (jwt *JWT) IsNil() bool {
