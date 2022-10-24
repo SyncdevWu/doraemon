@@ -5,6 +5,9 @@ type Options[K comparable, V any] struct {
 }
 
 func (op *Options[K, V]) init() {
+	if op == nil {
+		return
+	}
 	if op.m == nil {
 		op.m = make(map[K]V)
 	}

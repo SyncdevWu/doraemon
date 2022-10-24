@@ -1,7 +1,6 @@
 package jwt
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"github.com/syncdevwu/doraemon/core/hashmap"
@@ -65,12 +64,8 @@ func (c *Claims) Parse(tokenPart string) error {
 	if c.IsNil() {
 		return errors.New("claim is nil")
 	}
-	decodeString, err := base64.StdEncoding.DecodeString(tokenPart)
-	if err != nil {
-		return err
-	}
 	c.Clear()
-	err = json.Unmarshal(decodeString, c.HashMap)
+	err := json.Unmarshal([]byte(tokenPart), c.HashMap)
 	return err
 }
 

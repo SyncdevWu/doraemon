@@ -10,6 +10,9 @@ type HashMap[K comparable, V any] struct {
 }
 
 func NewHashMap[K comparable, V any](op *Options[K, V]) *HashMap[K, V] {
+	if op == nil {
+		op = &Options[K, V]{}
+	}
 	op.init()
 	return &HashMap[K, V]{
 		raw: op.m,
@@ -48,17 +51,17 @@ func (w *HashMap[K, V]) IsNotNil() bool {
 	return !w.IsNil()
 }
 
-func (w *HashMap[K, V]) Get(key K) (V, bool) {
+func (w *HashMap[K, V]) Get(key K) (v V, exists bool) {
 	if w.IsNil() {
-		return nil, false
+		return
 	}
-	value, exists := w.raw[key]
-	return value, exists
+	v, exists = w.raw[key]
+	return
 }
 
-func (w *HashMap[K, V]) Put(key K, value V) (V, int) {
+func (w *HashMap[K, V]) Put(key K, value V) (v V, insertNum int) {
 	if w.IsNil() {
-		return nil, 0
+		return
 	}
 	old, exists := w.raw[key]
 	w.raw[key] = value
@@ -69,17 +72,17 @@ func (w *HashMap[K, V]) Put(key K, value V) (V, int) {
 	}
 }
 
-func (w *HashMap[K, V]) Remove(key K) (V, bool) {
-	if w.IsNotNil() {
-		return nil, false
+func (w *HashMap[K, V]) Remove(key K) (v V, exists bool) {
+	if w.IsNil() {
+		return
 	}
-	old, exists := w.raw[key]
+	v, exists = w.raw[key]
 	delete(w.raw, key)
-	return old, exists
+	return
 }
 
 func (w *HashMap[K, V]) ContainsKey(key K) bool {
-	if w.IsNotNil() {
+	if w.IsNil() {
 		return false
 	}
 	_, exists := w.raw[key]
@@ -111,7 +114,7 @@ func (w *HashMap[K, V]) Keys() []K {
 	if w.IsNil() {
 		return make([]K, 0)
 	}
-	result := make([]K, len(w.raw))
+	result := make([]K, 0, len(w.raw))
 	for key, _ := range w.raw {
 		result = append(result, key)
 	}
@@ -122,7 +125,7 @@ func (w *HashMap[K, V]) Values() []V {
 	if w.IsNil() {
 		return make([]V, 0)
 	}
-	result := make([]V, len(w.raw))
+	result := make([]V, 0, len(w.raw))
 	for _, val := range w.raw {
 		result = append(result, val)
 	}
@@ -133,8 +136,8 @@ func (w *HashMap[K, V]) Entries() ([]K, []V) {
 	if w.IsNil() {
 		return make([]K, 0), make([]V, 0)
 	}
-	keys := make([]K, len(w.raw))
-	values := make([]V, len(w.raw))
+	keys := make([]K, 0, len(w.raw))
+	values := make([]V, 0, len(w.raw))
 	for key, val := range w.raw {
 		keys = append(keys, key)
 		values = append(values, val)

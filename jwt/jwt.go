@@ -5,6 +5,7 @@ import (
 	"github.com/syncdevwu/doraemon/core/util"
 	"github.com/syncdevwu/doraemon/jwt/signers"
 	"strings"
+	"time"
 )
 
 type JWT struct {
@@ -14,10 +15,48 @@ type JWT struct {
 	Tokens  []string
 }
 
-func NewJWT() *JWT {
+type Options struct {
+	Algorithm string
+	Issuer    string
+	Subject   string
+	Audience  string
+	ExpiresAt *time.Time
+	NotBefore *time.Time
+	IssuedAt  *time.Time
+	Payload   *hashmap.HashMap[string, any]
+}
+
+func NewJWT(option *Options) *JWT {
+	header := NewHeader()
+	header.Put(Type, "JWT")
+	if !util.IsBlank(option.Algorithm) {
+		header.Put(Algorithm, option.Algorithm)
+	}
+	payload := NewPayload()
+	if option.Payload != nil {
+		payload.PutAll(option.Payload.GetRaw())
+	}
+	if !util.IsBlank(option.Issuer) {
+		payload.Put(Issuer, option.Issuer)
+	}
+	if !util.IsBlank(option.Subject) {
+		payload.Put(Subject, option.Subject)
+	}
+	if !util.IsBlank(option.Audience) {
+		payload.Put(Audience, option.Audience)
+	}
+	if option.ExpiresAt != nil {
+		payload.Put(ExpiresAt, *option.ExpiresAt)
+	}
+	if option.NotBefore != nil {
+		payload.Put(NotBefore, *option.NotBefore)
+	}
+	if option.IssuedAt != nil {
+		payload.Put(IssuedAt, *option.IssuedAt)
+	}
 	return &JWT{
-		Header:  &Header{},
-		Payload: &Payload{},
+		Header:  header,
+		Payload: payload,
 	}
 }
 
@@ -45,6 +84,7 @@ func ParseJWT(token string) *JWT {
 	if err = payload.Parse(string(decodePayload)); err != nil {
 		return nil
 	}
+
 	return &JWT{
 		Header:  header,
 		Payload: payload,
@@ -94,8 +134,8 @@ func (jwt *JWT) GetHeaders() hashmap.HashMap[string, any] {
 	return headers
 }
 
-func (jwt *JWT) GetPayloads() hashmap.HashMap[string, any] {
-	payloads := hashmap.HashMap[string, any]{}
+func (jwt *JWT) GetPayloads() *hashmap.HashMap[string, any] {
+	payloads := hashmap.NewHashMap[string, any](nil)
 	if jwt.IsNil() {
 		return payloads
 	}
@@ -107,6 +147,14 @@ func (jwt *JWT) GetPayloads() hashmap.HashMap[string, any] {
 		payloads.Put(keys[i], vals[i])
 	}
 	return payloads
+}
+
+func (jwt *JWT) SetClaim(claim string, value any) *JWT {
+	if jwt.IsNil() {
+		return nil
+	}
+	jwt.Payload.Put(claim, value)
+	return jwt
 }
 
 func (jwt *JWT) Sign() string {
