@@ -9,10 +9,11 @@ import (
 )
 
 type JWT struct {
-	Header  *Header
-	Payload *Payload
-	Signer  signers.Signer
-	Tokens  []string
+	Header      *Header
+	Payload     *Payload
+	Signer      signers.Signer
+	Tokens      []string
+	SignedValid bool
 }
 
 type Options struct {
@@ -60,7 +61,7 @@ func NewJWT(option *Options) *JWT {
 	}
 }
 
-func ParseJWT(token string) *JWT {
+func ParseJWT(token string, key signers.Key) *JWT {
 	if util.IsBlank(token) {
 		return nil
 	}
@@ -84,12 +85,13 @@ func ParseJWT(token string) *JWT {
 	if err = payload.Parse(string(decodePayload)); err != nil {
 		return nil
 	}
-
-	return &JWT{
+	jwt := &JWT{
 		Header:  header,
 		Payload: payload,
 		Tokens:  tokens,
 	}
+	jwt.SignedValid = jwt.Verify(key)
+	return jwt
 }
 
 func (jwt *JWT) SetKey(key signers.Key) *JWT {
@@ -181,9 +183,12 @@ func (jwt *JWT) Sign() string {
 	return builder.String()
 }
 
-func (jwt *JWT) Verify() bool {
+func (jwt *JWT) Verify(key signers.Key) bool {
 	if jwt.IsNil() {
 		return false
+	}
+	if algorithm, ok := jwt.Header.GetClaim(Algorithm).(string); ok {
+		jwt.Signer = signers.NewSigner(algorithm, key)
 	}
 	if jwt.Signer == nil {
 		jwt.Signer = signers.NewNoneSigner()
@@ -195,9 +200,9 @@ func (jwt *JWT) Verify() bool {
 	return jwt.Signer.Verify(tokens[0], tokens[1], tokens[2])
 }
 
-func (jwt *JWT) Validate() bool {
-	if !jwt.Verify() {
-		return false
+func (jwt *JWT) Validate() *ValidationError {
+	if !jwt.SignedValid {
+		return NewValidationError("Token is signature invalid", ValidationErrorSignatureInvalid)
 	}
 	// 验证是否Token是否有效
 	return ValidateTime(jwt)
